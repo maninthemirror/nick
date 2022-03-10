@@ -14,7 +14,7 @@
 <body>
     <div id="app">
         <div class="container">
-            <form>
+            <form :class="{'d-none' : isOff.gen}">
                 <div class="mb-3">
                     <label for="" class="form-label">Campaign Name</label>
                     <input type="text" class="form-control" v-model="url_tree.utm_campaign">
@@ -30,6 +30,7 @@
                 </div>
                 <button class="btn btn-primary" @click.prevent="link_gen">產生</button>
             </form>
+            <button class="btn btn-primary" :class="{'d-none' : !isOff.gen}" @click.prevent="reload">重新產生</button>
 
         
             <table class="table">
@@ -40,7 +41,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="link in short_list">
-                    <td><a :href="link">{{link}}</a></td>
+                    <td><a :href="link" target="_blank">{{link}}</a></td>
                     </tr>
                 </tbody>
             </table>
@@ -59,7 +60,10 @@
                 'utm_campaign' : ''
             },
             list : [],
-            short_list : []
+            short_list : [],
+            isOff : {
+                gen : false
+            }
         },
         mounted(){
         },
@@ -67,9 +71,10 @@
             link_gen(){
                 var _this = this;
             var _arr = []
-                for(var i = 0 ; i < _this.loop ; i++ ){
-            
-                var _count = _this.number++
+                for(var i = 1 ; i <= _this.loop ; i++ ){
+                    console.log(i)
+                var _count = _this.number++;
+                console.log(_count)
                 var _link = _this.domin + '?utm_source=' + _this.url_tree.utm_source + '&utm_medium=' +_this. url_tree.utm_medium + '&utm_campaign=' + _this.url_tree.utm_campaign + " " + _this.addPreZero(_count);
                 
                 console.log(_link)
@@ -81,12 +86,13 @@
                     _this.short_list.push(feedback.data.link)
                 })
                 
-                if(i == _this.loop.length ){
+                if(i == _this.loop ){
                     goNext()
                 }
                 function goNext(){
-                    _this.number = 1;
-                    _this.loop = 1;
+                    _this.isOff.gen = true;
+                    // _this.number = 1;
+                    // _this.loop = 1;
                 }
             } // for
             },
@@ -115,6 +121,9 @@
             }
         
             return s+num;
+            },
+            reload(){
+                location.reload()
             }
         }
         })
