@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Nick發大財</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.14/vue.common.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.3/qs.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <label for="">起始數字</label>
+        <input type="text" v-model="number">
+      <br>
+        <label for="">需要幾個網址</label>
+        <input type="text" v-model="loop">
+        <br>
+        <button @click.prevent="link_gen">產生</button>
+        <table>
+          <thead>
+            <tr>
+              <th>網址</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="link in list">
+              <td>{{link}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <script>
+      var app = new Vue({
+        el : "#app",
+        data : {
+            number : 1,
+            loop : 1,
+            domin : 'https://www.tgl-group.net/en/index.php',
+            url_tree : {
+                'utm_source' : 'New Development',
+            'utm_medium' : 'email Development',
+            'utm_campaign' : 'Nick Web '
+            },
+            list : []
+        },
+        mounted(){
+        },
+        methods : {
+            link_gen(){
+                var _this = this;
+            var _arr = []
+                for(var i = 0 ; i < _this.loop ; i++ ){
+            
+                var _count = _this.number++
+                var _link = _this.domin + '?utm_source=' + _this.url_tree.utm_source + '&utm_medium=' +_this. url_tree.utm_medium + '&utm_campaign=' + _this.url_tree.utm_campaign + _this.addPreZero(_count);
+                
+                console.log(_link)
+                var _enc = encodeURI(_link)
+                _arr.push(_enc)
+                
+                _this.goLink(_enc).then(function(feedback){
+                    console.log(feedback.data.link)
+                })
+                
+            /*   if(i == _this.loop.length ){
+                goNext()
+                }
+                function goNext(){
+                _this.list = _arr
+                } */
+            } // for
+            },
+            goLink(url){
+            return axios({
+                method: 'post',
+                url: 'https://api-ssl.bitly.com/v4/shorten',
+                headers: {
+                    'Authorization': 'Bearer 90e9ad3f6d3a6a1eef7e107c2f719532c73ddbe9',
+                    'Content-Type': 'application/json'
+                },
+                data : JSON.stringify({
+                    "long_url": url,
+                }),
+                responseType: 'json',
+            }).then(function(data) {
+                return data
+            })
+            },
+            addPreZero(num){
+            var t = (num+'').length,
+                s = '';
+        
+            for(var i=0; i<2-t; i++){
+                s += '0';
+            }
+        
+            return s+num;
+            }
+        }
+        })
+    </script>
+</body>
+</html>
