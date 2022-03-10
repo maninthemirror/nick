@@ -13,25 +13,38 @@
 </head>
 <body>
     <div id="app">
-        <label for="">起始數字</label>
-        <input type="text" v-model="number">
-      <br>
-        <label for="">需要幾個網址</label>
-        <input type="text" v-model="loop">
-        <br>
-        <button @click.prevent="link_gen">產生</button>
-        <table>
-          <thead>
-            <tr>
-              <th>網址</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="link in list">
-              <td>{{link}}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="container">
+            <form>
+                <div class="mb-3">
+                    <label for="" class="form-label">Campaign Name</label>
+                    <input type="text" class="form-control" v-model="url_tree.utm_campaign">
+                    <div class="form-text">例如：Nick Case02</div>
+                </div>
+                <div class="mb-3">
+                    <label for="" class="form-label">起始數字</label>
+                    <input type="text" class="form-control"  v-model="number">
+                </div>
+                <div class="mb-3">
+                    <label for="">需要幾個網址</label>
+                    <input type="text"  class="form-control" v-model="loop">
+                </div>
+                <button class="btn btn-primary" @click.prevent="link_gen">產生</button>
+            </form>
+
+        
+            <table class="table">
+                <thead>
+                    <tr>
+                    <th>網址</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="link in short_list">
+                    <td><a :href="link">{{link}}</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
       </div>
       <script>
       var app = new Vue({
@@ -42,10 +55,11 @@
             domin : 'https://www.tgl-group.net/en/index.php',
             url_tree : {
                 'utm_source' : 'New Development',
-            'utm_medium' : 'email Development',
-            'utm_campaign' : 'Nick Web '
+                'utm_medium' : 'email Development',
+                'utm_campaign' : ''
             },
-            list : []
+            list : [],
+            short_list : []
         },
         mounted(){
         },
@@ -56,7 +70,7 @@
                 for(var i = 0 ; i < _this.loop ; i++ ){
             
                 var _count = _this.number++
-                var _link = _this.domin + '?utm_source=' + _this.url_tree.utm_source + '&utm_medium=' +_this. url_tree.utm_medium + '&utm_campaign=' + _this.url_tree.utm_campaign + _this.addPreZero(_count);
+                var _link = _this.domin + '?utm_source=' + _this.url_tree.utm_source + '&utm_medium=' +_this. url_tree.utm_medium + '&utm_campaign=' + _this.url_tree.utm_campaign + " " + _this.addPreZero(_count);
                 
                 console.log(_link)
                 var _enc = encodeURI(_link)
@@ -64,14 +78,16 @@
                 
                 _this.goLink(_enc).then(function(feedback){
                     console.log(feedback.data.link)
+                    _this.short_list.push(feedback.data.link)
                 })
                 
-            /*   if(i == _this.loop.length ){
-                goNext()
+                if(i == _this.loop.length ){
+                    goNext()
                 }
                 function goNext(){
-                _this.list = _arr
-                } */
+                    _this.number = 1;
+                    _this.loop = 1;
+                }
             } // for
             },
             goLink(url){
@@ -79,7 +95,7 @@
                 method: 'post',
                 url: 'https://api-ssl.bitly.com/v4/shorten',
                 headers: {
-                    'Authorization': 'Bearer 90e9ad3f6d3a6a1eef7e107c2f719532c73ddbe9',
+                    'Authorization': 'Bearer a5d60f5754f094d3eb5c66fec1cd19da0a757839',
                     'Content-Type': 'application/json'
                 },
                 data : JSON.stringify({
